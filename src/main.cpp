@@ -4,6 +4,7 @@
 #include "e-paper.h"
 #include "res/wifi.h"
 #include "avr/pgmspace.h"
+#include "array_make.h"
 
 #define DHTType DHT22
 #define DHTPin 13
@@ -22,22 +23,18 @@ void setup() {
 void loop() {
     while (1)
     {
-        // Clean
-        /*
-        unsigned char gImage[4000] PROGMEM={};
-        for (int i = 0; i < 4000; ++i) {
-            gImage[i]=gImage_BW[i];
-        }*/
         int bw_start=3648;
-        for (int i = 0; i < 19; ++i) {
-            for (int j = 0; j < 3; ++j) {
-            gImage_BW[bw_start]=wifi_3_18x14[j];
+        //sizeof(wifi_full_g_18x14);
+        for (int j = 0; j < sizeof(wifi_full_g_18x14); ++++j){
+            for (int i = 0; i < 2;++i) {
+                gImage_BW[bw_start + i] = wifi_full_g_18x14[j+i];
             }
             bw_start=bw_start+16;
         }
+
         EPD_HW_Init(); // Electronic paper initialization
         EPD_WhiteScreen_ALL_Clean();
-        EPD_DeepSleep(); // Enter deep sleep,Sleep instruction is necessary, please do not delete!!!
+        //EPD_DeepSleep(); // Enter deep sleep,Sleep instruction is necessary, please do not delete!!!
 
         // Full screen refresh
         EPD_HW_Init();                            // Electronic paper initialization

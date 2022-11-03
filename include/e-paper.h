@@ -31,5 +31,8 @@ void EPD_HW_InitPion(void );
 
 extern unsigned char gImage_BW[4000];
 extern unsigned char gImage_R[4000];
-
+/*
+extern int Epaper_size_x=250;
+extern  int  Epaper_size_y=122;
+*/
 #endif //ESP8266_PROJECT_E_PAPER_H
