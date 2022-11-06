@@ -24,10 +24,5 @@ add_custom_target(
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-add_custom_target(
-    Debug ALL
-    COMMAND platformio -c clion debug "$<$<NOT:$<CONFIG:All>>:-e${CMAKE_BUILD_TYPE}>"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
 
-add_executable(Z_DUMMY_TARGET ${SRC_LIST} include/res/wifi.h src/array_make.cpp include/array_make.h)
+add_executable(Z_DUMMY_TARGET ${SRC_LIST} include/res/wifi.cpp include/res/wifi.h)
