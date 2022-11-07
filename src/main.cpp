@@ -2,10 +2,19 @@
 #include "DHT.h"
 #include "Adafruit_BMP085.h"
 #include "e-paper.h"
-#include "avr/pgmspace.h"
 #include "array_make.h"
 #include "ESP8266WiFi.h"
 #include "ESP8266WiFiMulti.h"
+#include "AddrList.h"
+
+
+#ifndef STASSID
+#define STASSID "serverwlan"
+#define STAPSK  "1114807608hzq"
+#endif
+
+const char *ssid = STASSID;
+const char *password = STAPSK;
 
 #define DHTType DHT22
 #define DHTPin 13
@@ -20,33 +29,38 @@ void setup() {
     Serial.begin(115200);
     EPD_HW_InitPion();
     ESP.wdtDisable();
-    //clean display
-    EPD_HW_Init(); // Electronic paper initialization
-    EPD_WhiteScreen_ALL_Clean();
     WiFi.mode(WIFI_STA);
-    wiFiMulti.addAP("serverwlan", "1114807608hzq");
-    if (wiFiMulti.run()!=WL_CONNECTED){
-        Serial.println("WL_CONECTED ERR");
-        Sys_run(); // System run
-        return;
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED) {
+        delay(500);
+        Serial.print(".");
+    }
+    Serial.println("");
+    Serial.println("WiFi connected");
+    Serial.println("IP address: ");
+    for (auto a: addrList) {
+        Serial.println(a.toString().c_str());
     }
 }
 
 void loop() {
-    CreatWifi_Epaper_Array_ICON();
-    EPD_HW_Init();                            // Electronic paper initialization
-    EPD_WhiteScreen_ALL(true, gImage_BW, gImage_R); // Refresh the picture in full screen
-    EPD_DeepSleep();                          // Enter deep sleep,Sleep instruction is necessary, please do not delete!!!
-    delay(2000);
-
-    // Clean
-    /*
-    EPD_HW_Init(); // Electronic paper initialization
-    EPD_WhiteScreen_ALL_Clean();
-    EPD_DeepSleep(); // Enter deep sleep,Sleep instruction is necessary, please do not delete!!!
-     */
+    //clean display
     while (1) {
-        Sys_run(); // System run
-        LED_run(); // Breathing lamp
+        EPD_HW_Init(); // Electronic paper initialization
+        EPD_WhiteScreen_ALL_Clean();
+        EPD_DeepSleep();
+        //wifi array
+        CreatWifi_Epaper_Array_ICON();
+
+        EPD_HW_Init();                            // Electronic paper initialization
+        EPD_WhiteScreen_ALL(false, gImage_BW, gImage_R); // Refresh the picture in full screen
+        EPD_DeepSleep();                          // Enter deep sleep,Sleep instruction is necessary, please do not delete!!!
+        delay(2000);
+
+        while (true){
+            Sys_run(); // System run
+            LED_run(); // Breathing lamp
+        }
     }
 }
+

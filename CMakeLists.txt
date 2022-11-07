@@ -25,4 +25,4 @@ add_custom_target(
 )
 
 
-add_executable(Z_DUMMY_TARGET ${SRC_LIST} include/res/wifi.cpp include/res/wifi.h)
+add_executable(Z_DUMMY_TARGET ${SRC_LIST})
