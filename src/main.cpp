@@ -37,7 +37,7 @@ void setup() {
     delay(500);
     //init epaper
     EPD_HW_InitPion();
-    ESP.wdtDisable();
+    ESP.wdtFeed();
     //init wifi
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
@@ -94,7 +94,9 @@ void setup() {
     pinMode(9,INPUT);
     delay(500);
     HttpClient::Data client;
-    client.getPOSTJSON(data.tem1,data.hum,data.hi,data.tem2,data.pre,data.alt);
+    HttpClient httpPost;
+    std::string dataJson=client.getPOSTJSON(data.tem1,data.hum,data.hi,data.tem2,data.pre,data.alt);
+    httpPost.SendPOST(dataJson);
     //deepsleep esp
     ESP.deepSleep(120e6);
 }

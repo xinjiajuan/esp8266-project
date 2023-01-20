@@ -33,8 +33,17 @@ public:
         }
         void IncomingDeviceInfo();
     public:
-        void getPOSTJSON(float dht_tem, float dht_hum, float dht_hi,float bmp_tem,int bmp_pre,float bmp_alt);
+        std::string getPOSTJSON(
+                float dht_tem,
+                float dht_hum,
+                float dht_hi,
+                float bmp_tem,
+                int bmp_pre,
+                float bmp_alt
+                );
+
     };
+    bool SendPOST(std::string jsonstr);
 };
 
 #endif //ESP8266_PROJECT_HTTP_H
