@@ -1,8 +1,10 @@
 #include <Arduino.h>
-#include "DHT.h"
-#include "Adafruit_BMP085.h"
+
 #include "e-paper.h"
 #include "array_make.h"
+#include "httpclient/http.h"
+#include "data/data.h"
+
 #include "ESP8266WiFi.h"
 #include "ESP8266WiFiMulti.h"
 #include "AddrList.h"
@@ -17,35 +19,30 @@
 
 const char *ssid = STASSID;
 const char *password = STAPSK;
-//dht22 init
-#define DHTType DHT22
-#define DHTPin 14
-DHT dht(DHTPin, DHTType);
 
-Adafruit_BMP085 bmp;
-
+//#define SealevelPressure 101750
 ESP8266WiFiMulti wiFiMulti;
 //ntp客户端
 WiFiUDP ntpUDP;
-NTPClient timeClient(ntpUDP, "ntp.ntsc.ac.cn", 8*60*60, 60000);
-void setup() {
-// write your initialization code here
+NTPClient timeClient(ntpUDP, "ntp.ntsc.ac.cn", 8 * 60 * 60, 1000);
 
+EpaperArray paper;
+
+void setup() {
+    // write your initialization code here
     Serial.begin(115200);
-    //init dht22
-    dht.begin();
+    //init dht 3.3v power
+    delay(500);
+    pinMode(9,OUTPUT);
+    delay(500);
     //init epaper
     EPD_HW_InitPion();
     ESP.wdtDisable();
-    //init bmp180
-    if (!bmp.begin()) {
-        Serial.println("Could not find a valid BMP085 sensor, check wiring!");
-        return;
-    }
     //init wifi
     WiFi.mode(WIFI_STA);
     WiFi.begin(ssid, password);
     //connect wifi
+    Serial.print("Connecting WIFI");
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
@@ -57,45 +54,51 @@ void setup() {
     }
     //ntpclient
     timeClient.begin();
-    timeClient.update();
+    /*
+     * start work
+     * */
     //clean display
     EPD_HW_Init(); // Electronic paper initialization
     EPD_WhiteScreen_ALL_Clean();
-    EPD_DeepSleep();
+    paper.Epaper_Array_init();
+    paper.CreatWifi_Epaper_Array_ICON();
+    Serial.println("Creat WIFI OK!");
+    Sys_run();
+//    while (isnan(dht.readHumidity()) || isnan(dht.readTemperature()) || isnan(dht.readTemperature(true))) {
+//        delay(500);
+//        Serial.println(F("Failed to read from DHT sensor!"));
+//        Sys_run();
+//    }
+    while (!timeClient.update()) {
+        delay(500);
+        Serial.println(F("Failed to read from NTP Time!"));
+        Sys_run();
+    }
+    timestamp stamp;
+    EnvData data;
+    stamp.TimeStamp=timeClient.getEpochTime();
+    Serial.println("getTimeStamp OK!");
+    paper.Epaper_Time_Array_Config(stamp.TimeStamp);
+    data.readALLSensorData(stamp.timestampToYear_OR_Month_OR_Day(stamp.TimeStamp,TimeMonth));
+    paper.Epaper_DHT22_Vale_Array(data.tem1,data.hum,data.hi);
+    paper.Epaper_BMP180_Vale_Array(data.pre,data.tem2,data.alt);
+//    paper.Epaper_DHT22_Vale_Array(
+//            dht.readTemperature(),
+//            dht.readHumidity(),
+//            dht.computeHeatIndex(dht.readTemperature(), dht.readHumidity(), false)
+//    );
+//    paper.Epaper_BMP180_Vale_Array(bmp.readPressure(),bmp.readTemperature(), Calculate_Pressure_Altitude(bmp.readPressure(),dht.readTemperature()));
+    EPD_HW_Init();                            // Electronic paper initialization
+    EPD_WhiteScreen_ALL(false, paper.Return_gImage_BW(), paper.Return_gImage_R()); // Refresh the picture in full screen
+    //off dht power
+    pinMode(9,INPUT);
+    delay(500);
+    HttpClient::Data client;
+    client.getPOSTJSON(data.tem1,data.hum,data.hi,data.tem2,data.pre,data.alt);
+    //deepsleep esp
+    ESP.deepSleep(120e6);
 }
 
 void loop() {
-    while (1) {
-        Sys_run();
-        Serial.println(bmp.readTemperature());
-        Serial.println(bmp.readPressure());
-        CreatWifi_Epaper_Array_ICON();
-        Serial.println(timeClient.getFormattedTime());
-        timeClient.update();
-        delay(1000);
-        Epaper_Time_Array_Config(timeClient.getHours(),timeClient.getMinutes(),timeClient.getEpochTime());
-        delay(1000);
-        while (isnan(dht.readHumidity()) || isnan(dht.readTemperature()) || isnan(dht.readTemperature(true))) {
-            Serial.println(F("Failed to read from DHT sensor!"));
-            Sys_run();
-        }
-        Serial.println(dht.readTemperature());
-        Serial.println(dht.readHumidity());
-        Epaper_DHT22_Vale_Array(
-                dht.readTemperature(),
-                dht.readHumidity(),
-                dht.computeHeatIndex(dht.readTemperature(),dht.readHumidity(),false)
-                );
-        Serial.println("DHT Array OK!");
-        EPD_HW_Init();                            // Electronic paper initialization
-        EPD_WhiteScreen_ALL(false, gImage_BW, gImage_R); // Refresh the picture in full screen
-        EPD_DeepSleep();                          // Enter deep sleep,Sleep instruction is necessary, please do not delete!!!
-        //delay(120000);
-        while (true){
-            //wifi array
-            Sys_run(); // System run
-            LED_run(); // Breathing lamp
-        }
-    }
-}
 
+}

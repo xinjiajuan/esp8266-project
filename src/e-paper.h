@@ -29,8 +29,8 @@ void Sys_run(void );
 void LED_run(void);
 void EPD_HW_InitPion(void );
 
-extern unsigned char gImage_BW[4000];
-extern unsigned char gImage_R[4000];
+extern const unsigned char gImage_BW[4000];
+extern const unsigned char gImage_R[4000];
 /*
 extern int Epaper_size_x=250;
 extern  int  Epaper_size_y=122;
