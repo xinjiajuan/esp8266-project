@@ -13,7 +13,7 @@
 
 
 #ifndef STASSID
-#define STASSID "serverwlan"
+#define STASSID "CMCC-5cSZ"
 #define STAPSK  "1114807608hzq"
 #endif
 
