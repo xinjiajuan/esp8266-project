@@ -1,4 +1,4 @@
-.pio
+.pio/build/
 CMakeListsPrivate.txt
 cmake-build-*/
 .idea/
