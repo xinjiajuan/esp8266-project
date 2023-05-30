@@ -1,7 +1,5 @@
 #include <Arduino.h>
 
-#include "e-paper.h"
-#include "array_make.h"
 #include "httpclient/http.h"
 #include "data/data.h"
 
@@ -26,7 +24,7 @@ ESP8266WiFiMulti wiFiMulti;
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "ntp.ntsc.ac.cn", 8 * 60 * 60, 1000);
 
-EpaperArray paper;
+
 
 void setup() {
     // write your initialization code here
@@ -36,7 +34,6 @@ void setup() {
     pinMode(9,OUTPUT);
     delay(500);
     //init epaper
-    EPD_HW_InitPion();
     ESP.wdtFeed();
     //init wifi
     WiFi.mode(WIFI_STA);
@@ -57,39 +54,18 @@ void setup() {
     /*
      * start work
      * */
-    //clean display
-    EPD_HW_Init(); // Electronic paper initialization
-    EPD_WhiteScreen_ALL_Clean();
-    paper.Epaper_Array_init();
-    paper.CreatWifi_Epaper_Array_ICON();
-    Serial.println("Creat WIFI OK!");
-    Sys_run();
-//    while (isnan(dht.readHumidity()) || isnan(dht.readTemperature()) || isnan(dht.readTemperature(true))) {
-//        delay(500);
-//        Serial.println(F("Failed to read from DHT sensor!"));
-//        Sys_run();
-//    }
+    //clean display屏幕初始化
+
     while (!timeClient.update()) {
         delay(500);
         Serial.println(F("Failed to read from NTP Time!"));
-        Sys_run();
+        ESP.wdtFeed();//喂狗
     }
     timestamp stamp;
     EnvData data;
     stamp.TimeStamp=timeClient.getEpochTime();
     Serial.println("getTimeStamp OK!");
-    paper.Epaper_Time_Array_Config(stamp.TimeStamp);
     data.readALLSensorData(stamp.timestampToYear_OR_Month_OR_Day(stamp.TimeStamp,TimeMonth));
-    paper.Epaper_DHT22_Vale_Array(data.tem1,data.hum,data.hi);
-    paper.Epaper_BMP180_Vale_Array(data.pre,data.tem2,data.alt);
-//    paper.Epaper_DHT22_Vale_Array(
-//            dht.readTemperature(),
-//            dht.readHumidity(),
-//            dht.computeHeatIndex(dht.readTemperature(), dht.readHumidity(), false)
-//    );
-//    paper.Epaper_BMP180_Vale_Array(bmp.readPressure(),bmp.readTemperature(), Calculate_Pressure_Altitude(bmp.readPressure(),dht.readTemperature()));
-    EPD_HW_Init();                            // Electronic paper initialization
-    EPD_WhiteScreen_ALL(false, paper.Return_gImage_BW(), paper.Return_gImage_R()); // Refresh the picture in full screen
     //off dht power
     pinMode(9,INPUT);
     delay(500);
