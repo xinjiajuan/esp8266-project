@@ -1,10 +1,10 @@
 //
 // Created by moexinjiajuan on 2023/1/19.
 //
-
+/*
 #ifndef ESP8266_PROJECT_DATA_H
 #define ESP8266_PROJECT_DATA_H
-
+/*
 #include "DHT.h"
 #include "Adafruit_BMP085.h"
 #include "sys/time.h"
@@ -25,6 +25,7 @@ private:
      * 讲每年相同月份的值计算平均数，得出下面的每月海平面气压趋势值。
      * 可用于参考每月的海平面气压，直接进行海拔高度计算
      * */
+/*
     int GanzhouSealevelPressure[12]={
             102354,
             102229,
@@ -88,3 +89,4 @@ public:
     };
 };
 #endif //ESP8266_PROJECT_DATA_H
+*/

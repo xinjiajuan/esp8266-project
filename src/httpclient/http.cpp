@@ -1,7 +1,7 @@
 //
 // Created by moexinjiajuan on 2023/1/13.
 //
-
+/*
 #include "http.h"
 #include "ESP8266HTTPClient.h"
 #include "ArduinoJson.h"
@@ -65,3 +65,4 @@ bool HttpClient::SendPOST(std::string jsonstr) {
         return false;
     }
 }
+*/

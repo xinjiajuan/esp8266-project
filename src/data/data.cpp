@@ -1,7 +1,7 @@
 //
 // Created by moexinjiajuan on 2023/1/19.
 //
-
+/*
 #include "data.h"
 #include "DHT.h"
 #include "Adafruit_BMP085.h"
@@ -53,3 +53,4 @@ bool EnvData::initBMP180Sensor() {
         return true;
     }
 }
+*/
