@@ -45,9 +45,9 @@
  * GPIO config
 **/
 #define EPD_CS_PIN   2
-#define EPD_RST_PIN  4
+#define EPD_RST_PIN  3
 #define EPD_DC_PIN   0
-#define EPD_BUSY_PIN 5
+#define EPD_BUSY_PIN 10
 
 #define GPIO_PIN_SET   1
 #define GPIO_PIN_RESET 0

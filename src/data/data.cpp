@@ -1,56 +1,59 @@
 //
 // Created by moexinjiajuan on 2023/1/19.
 //
-/*
+
 #include "data.h"
 #include "DHT.h"
-#include "Adafruit_BMP085.h"
-
-
-bool EnvData::readALLSensorData(int month,bool initSensorObject) {
-    if(initSensorObject){
-        initDHTSensor();
-        if(!initBMP180Sensor()){
-            Serial.println("Failed init for bmp SensorObject ");
-            return false;
-        }
-    }
-    Serial.println("init bmp SensorObject OK!");
-    int i=0;
-    //dht22
-    //test working
-    while (isnan(dht.readHumidity()) || isnan(dht.readTemperature()) || isnan(dht.readTemperature(true))) {
-        delay(500);
-        Serial.println(F("Failed to read from DHT sensor!"));
-        if(i==20){
-            return false;
-        }
-        i++;
-        ESP.wdtFeed();
-    }
-    Serial.println("init DHT22 SensorObject OK!");
-    //record the value at the moment
-    tem1=dht.readTemperature();
-    hum=dht.readHumidity();
-    hi=dht.computeHeatIndex(tem1,hum, false);
-    //bmp180
-    tem2=bmp.readTemperature();
-    pre=bmp.readPressure();
-    alt=bmp.readAltitude(GanzhouSealevelPressure[month]);
-    return true;
-}
 
 void EnvData::initDHTSensor() {
     //dht=DHT(DHTPin,DHTType);
+    delay(100);
+    pinMode(TriodPin,OUTPUT);
+    delay(150);
     dht.begin();
-}
-
-bool EnvData::initBMP180Sensor() {
-    if (!bmp.begin()) {
-        Serial.println("Could not find a valid BMP085 sensor, check wiring!");
-        return false;
-    } else{
-        return true;
+    while (isnan(dht.readTemperature()) || isnan(dht.readHumidity()) || isnan(dht.readTemperature(true))) {
+        Serial.println(F("Failed to read from DHT sensor!"));
+        delay(500);
+        ESP.wdtFeed();
     }
 }
-*/
+void EnvData::downDHTSensor() {
+    pinMode(TriodPin,INPUT);
+}
+
+float EnvData::read_Tem_1_SensorData() {
+    return tem1;
+}
+
+float EnvData::read_Hu_SensorData() {
+    return hu;
+}
+
+float EnvData::read_Hi_sensorData() {
+    return hi;
+}
+
+void EnvData::initBMPSensor() {
+    //mywire.begin(BMP_SDA_PIN,BMP_SCL_PIN);
+    while (!bmp.begin()){
+        delay(500);
+        Serial.println("Could not find a valid BMP085 sensor, check wiring!");
+        ESP.wdtFeed();
+    }
+}
+
+void EnvData::initSensorData() {
+    tem1=dht.readTemperature();
+    tem2=bmp.readTemperature();
+    hu=dht.readHumidity();
+    hi=dht.computeHeatIndex((tem2+tem1)/2,hu);
+    pre=bmp.readPressure();
+}
+
+float EnvData::read_Tem_2_SensorData() {
+    return tem2;
+}
+
+int32_t EnvData::read_Pressure_sensorData() {
+    return pre;
+}

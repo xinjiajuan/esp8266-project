@@ -63,45 +63,108 @@ void epaper::date_make_show(unsigned long epochtime) {
     yearNUM= EpochTimetoExactTime(epochtime,YearTYPE);
     monthNUM= EpochTimetoExactTime(epochtime,MonthTYPE);
     dayNUM= EpochTimetoExactTime(epochtime,DayTYPE);
-    int YueCN_X,DayCN_X,DayNUM_X;
-    if(monthNUM>=10){
-        YueCN_X=11*6+2+16;
-        DayNUM_X=11*6+16*2+2;
-        if(dayNUM>=10){
-            DayCN_X=11*8+2+16*2;
-        } else{
-            DayCN_X=11*7+16*2+2;
-        }
-    } else{
-        YueCN_X=11*5+2+16;
-        DayNUM_X=11*5+16*2+2;
-        if(dayNUM>=10){
-            DayCN_X=11*7+2+16*2;
-        } else{
-            DayCN_X=11*6+2+16*2;
-        }
-    }
+    char str_year[5],str_month[3],str_day[3];
+    sprintf(str_year,"%02d",yearNUM);
+    sprintf(str_month,"%02d",monthNUM);
+    sprintf(str_day,"%02d",dayNUM);
     Paint_DrawLine(0,22,250,22,BLACK,DOT_PIXEL_2X2,LINE_STYLE_SOLID);
     //显示日期文字
     Paint_DrawString_CN(11*4+2,2,"年",&Font12CN,BLACK,WHITE);//年
-    Paint_DrawString_CN(YueCN_X,2,"月",&Font12CN,BLACK,WHITE);//月
-    Paint_DrawString_CN(DayCN_X,2,"日",&Font12CN,BLACK,WHITE);//日
+    Paint_DrawString_CN(11*6+2+16,2,"月",&Font12CN,BLACK,WHITE);//月
+    Paint_DrawString_CN(11*8+2+16*2,2,"日",&Font12CN,BLACK,WHITE);//日
     setRedBG();
-    Paint_DrawNum(2,4,yearNUM,&Font16,BLACK,WHITE);
-    Paint_DrawNum(11*4+16+2,4,monthNUM,&Font16,BLACK,WHITE);
-    Paint_DrawNum(DayNUM_X,4,dayNUM,&Font16,BLACK,WHITE);
+    Paint_DrawString_EN(2,4,str_year,&Font16,WHITE,BLACK);
+    Paint_DrawString_EN(11*4+16+2,4,str_month,&Font16,WHITE,BLACK);
+    Paint_DrawString_EN(11*6+16*2+2,4,str_day,&Font16,WHITE,BLACK);
 }
+
 void epaper::time_make_show(int hour, int min) {
+    char str_hour[3],str_min[3];
+    sprintf(str_hour,"%02d",hour);
+    sprintf(str_min,"%02d",min);
     setRedBG();
-    Paint_DrawNum(250-(14*2+2),2,min,&Font20,BLACK,WHITE);
+    Paint_DrawString_EN(250-(14*2+2),2,str_min,&Font20,WHITE,BLACK);
     setBlcakBG();
     Paint_DrawString_EN(250-(14*3+2),2,":",&Font20,WHITE,BLACK);
     setRedBG();
-    Paint_DrawNum(250-(14*5+2),2,hour,&Font20,BLACK,WHITE);
+    Paint_DrawString_EN(250-(14*5+2),2,str_hour,&Font20,WHITE,BLACK);
 }
-void epaper::DHT22_make_show(float tem1, float tem2, float hu, float hi) {
-    
+
+void epaper::tem_1_make_show(float tem1) {
+    int int_part,decimal_part;
+    char str_int[3],str_decimal[3];
+    split_float(tem1,&int_part,&decimal_part);
+    sprintf(str_int,"%02d",int_part);
+    sprintf(str_decimal,"%02d",decimal_part);
+    setBlcakBG();
+    Paint_DrawString_CN(2,26,"温度:",&Font12CN,BLACK,WHITE);
+    setRedBG();
+    Paint_DrawString_EN(16*3-5,29,str_int,&Font16,WHITE,BLACK);
+    Paint_DrawString_EN(16*3+11*2-5,29,".",&Font16,WHITE,BLACK);
+    Paint_DrawString_EN(16*3+11*3-5,29,str_decimal,&Font16,WHITE,BLACK);
+    setBlcakBG();
+    Paint_DrawString_CN(16*3+11*5-5,26,"℃",&Font12CN,BLACK,WHITE);
 }
+
+void epaper::hum_make_show(float hum) {
+    int int_part,decimal_part;
+    char str_int[3],str_decimal[3];
+    split_float(hum,&int_part,&decimal_part);
+    sprintf(str_int,"%02d",int_part);
+    sprintf(str_decimal,"%02d",decimal_part);
+    setBlcakBG();
+    Paint_DrawString_CN(2,44,"湿度:",&Font12CN,BLACK,WHITE);
+    setRedBG();
+    Paint_DrawString_EN(16*3-5,47,str_int,&Font16,WHITE,BLACK);
+    Paint_DrawString_EN(16*3+11*2-5,47,".",&Font16,WHITE,BLACK);
+    Paint_DrawString_EN(16*3+11*3-5,47,str_decimal,&Font16,WHITE,BLACK);
+    setBlcakBG();
+    Paint_DrawString_CN(16*3+11*5+2,44,"%",&Font12CN,BLACK,WHITE);
+}
+
+void epaper::hi_make_show(float hi) {
+    int int_part,decimal_part;
+    char str_int[3],str_decimal[3];
+    split_float(hi,&int_part,&decimal_part);
+    sprintf(str_int,"%02d",int_part);
+    sprintf(str_decimal,"%02d",decimal_part);
+    setBlcakBG();
+    Paint_DrawString_CN(2,62,"热指数:",&Font12CN,BLACK,WHITE);
+    setRedBG();
+    Paint_DrawString_EN(16*4-5,65,str_int,&Font16,WHITE,BLACK);
+    Paint_DrawString_EN(16*4+11*2-5,65,".",&Font16,WHITE,BLACK);
+    Paint_DrawString_EN(16*4+11*3-5,65,str_decimal,&Font16,WHITE,BLACK);
+    setBlcakBG();
+    Paint_DrawString_CN(16*4+11*5-5,62,"℃",&Font12CN,BLACK,WHITE);
+}
+
+void epaper::tem_2_make_show(float tem2) {
+    int int_part,decimal_part;
+    char str_int[3],str_decimal[3];
+    split_float(tem2,&int_part,&decimal_part);
+    sprintf(str_int,"%02d",int_part);
+    sprintf(str_decimal,"%02d",decimal_part);
+    setBlcakBG();
+    Paint_DrawString_CN(250-(16*3+11*6+3),26,"温度:",&Font12CN,BLACK,WHITE);
+    setRedBG();
+    Paint_DrawString_EN(250-(16+11*5+3),29,str_int,&Font16,WHITE,BLACK);
+    Paint_DrawString_EN(250-(16+11*3+3),29,".",&Font16,WHITE,BLACK);
+    Paint_DrawString_EN(250-(16+11*2+3),29,str_decimal,&Font16,WHITE,BLACK);
+    setBlcakBG();
+    Paint_DrawString_CN(250-(16+2),26,"℃",&Font12CN,BLACK,WHITE);
+}
+
+void epaper::pre_make_show(int32_t pre) {
+    char str_pre[7];
+    sprintf(str_pre,"%06d",pre);
+    setBlcakBG();
+    Paint_DrawString_CN(250-(16*3+11*7),44,"气压:",&Font12CN,BLACK,WHITE);
+    setRedBG();
+    Paint_DrawString_EN(250-(11*8),47,str_pre,&Font16,WHITE,BLACK);
+    setBlcakBG();
+    Paint_DrawString_EN(250-(11*2),47,"Pa",&Font16,WHITE,BLACK);
+}
+
 void epaper::display() {
     EPD_2IN13B_V4_Display(BlackImage,RImage);
     DEV_Delay_ms(2000);
@@ -109,6 +172,10 @@ void epaper::display() {
 void epaper::sleep() {
     printf("Goto Sleep...\r\n");
     EPD_2IN13B_V4_Sleep();
+    free(BlackImage);
+    free(RImage);
+    BlackImage = NULL;
+    RImage = NULL;
 }
 void epaper::clear() {
     EPD_2IN13B_V4_Clear();
@@ -116,4 +183,9 @@ void epaper::clear() {
     free(RImage);
     BlackImage = NULL;
     RImage = NULL;
+}
+
+void epaper::split_float(float num, int *int_part, int *decimal_part) {
+    *int_part = (int)num;  // 将浮点数转换为整数
+    *decimal_part = (int)((num - *int_part) * 100);  // 将小数部分转换为整数
 }

@@ -18,11 +18,16 @@ class epaper {
     void setRedBG();
     void setBlcakBG();
     int EpochTimetoExactTime(unsigned long epochtime, int getType);
+    void split_float(float num,int *int_part,int *decimal_part);
 public:
     void init_epaper_device();
     void date_make_show(unsigned long epochtime = 2023);
     void time_make_show(int hour = 24, int min = 24);
-    void DHT22_make_show(float tem1, float tem2, float hu, float hi);
+    void tem_1_make_show(float tem1);
+    void hum_make_show(float hum);
+    void hi_make_show(float hi);
+    void tem_2_make_show(float tem2);
+    void pre_make_show(int32_t pre);
     void display();
     void sleep();
     void clear();
